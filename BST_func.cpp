@@ -2,6 +2,7 @@
 #include<iostream>
 #include<string>
 #include<vector>
+#include<queue>
 #include<math.h>
 
 #define oo -1000000
@@ -132,6 +133,50 @@ private:
 		if (res != -1) return res;
 		return root->key;
 	}
+	//find max weight path from root to leaf
+	int maxPath(link root, int sum)
+	{
+		if (root == nullptr) return sum;
+		return max(maxPath(root->left, sum + root->key), maxPath(root->right, sum + root->key));
+	}
+	//find max sum key of level
+	void maxLevel(link root, int& level, int &sum)
+	{
+		level = 0;
+		sum = root->key;
+		int sumLevel[1000];//sum of level
+		memset(sumLevel, 0, 1000);
+		queue<pair<link, int>> q;// manager root and level of it
+		q.push({root, 0});
+		while(!q.empty())
+		{
+			pair<link, int> t = q.front();
+			q.pop();
+
+			sumLevel[t.second] += t.first->key;
+			if (sumLevel[t.second] > sum) {
+				sum = sumLevel[t.second];
+				level = t.second;
+			}
+
+			if (t.first->left) q.push({t.first->left, t.second + 1});
+			if (t.first->right) q.push({ t.first->right, t.second + 1 });
+		} 
+	}
+	//find max sum level use DFS
+	void maxLevel_DFS(link root, int &res, int &resLevel, int level, int sum[])
+	//res is result (sum max), resLevel is level result (level has max sum), level is now level, sum[] save sum value of level now   
+	{
+		if (root == nullptr) return;
+		sum[level] += root->key;
+
+		if (sum[level] > res) {
+			res = sum[level];
+			resLevel = level;
+		}
+		maxLevel_DFS(root->left, res, resLevel, level + 1, sum);
+		maxLevel_DFS(root->right, res, resLevel, level + 1, sum);
+	}
 public:
 	BST() {
 		root = nullptr;
@@ -177,6 +222,26 @@ public:
 	{
 		cout << "Ceil " << key << ": " << ceilT(root, key) << endl;
 	}
+	//find max weight path from root to leaf
+	void maxPath()
+	{
+		cout << "Max Path From Root to Leaf: "<<maxPath(root, 0) << endl;
+	}
+	//find max wieght level of tree
+	void maxLevel()
+	{
+		int level, sum;
+		maxLevel(root, level, sum);
+		cout << "Max sum key Level is "<<level<<" with value: "<<sum << endl;
+	}
+	//find max wright level of tree use DFS
+	void maxLevel_DFS()
+	{
+		int sum[1000], res = root->key, level = 0;
+		memset(sum, 0, 1000);
+		maxLevel_DFS(root, res, level, 0, sum);
+		cout << "With DFS Max sum key Level is " << level << " with value: " << res << endl;
+	}
 };
 
 int main()
@@ -192,16 +257,18 @@ int main()
 	tree.insertItem(20);
 	tree.insertItem(21);
 	tree.insertItem(18);
-	tree.insertItem(19);
 	//tree.delItem(16);
 	//tree.delItem(22);
 	//{}[]
 	tree.BFS();
-	tree.hashPathSum(69);
-	tree.findNotBalance();
-	tree.height();
-	cout << endl;
-	tree.floorT(17);
-	tree.ceilT(17);
+	//tree.hashPathSum(69);
+	//tree.findNotBalance();
+	//tree.height();
+	//cout << endl;
+	//tree.floorT(17);
+	//tree.ceilT(17);
+	tree.maxPath();
+	tree.maxLevel();
+	tree.maxLevel_DFS();
 	return 0;
 }
