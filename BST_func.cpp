@@ -112,6 +112,26 @@ private:
 		findNotBalance(root->left);
 		findNotBalance(root->right);
 	}
+	int floorT(link root, int key)
+	{
+		if (root == nullptr) return -1;
+		if (root->key > key) return floorT(root->left, key);
+		else if (key == root->key) return key;
+		else {
+			int res = floorT(root->right, key);
+			if (res != -1) return res;
+			return root->key;
+		}
+	}
+	int ceilT(link root, int key)
+	{
+		if (root == nullptr) return -1;
+		if (root->key == key) return key;
+		if (root->key < key) return ceilT(root->right, key);
+		int res = ceilT(root->left, key);
+		if (res != -1) return res;
+		return root->key;
+	}
 public:
 	BST() {
 		root = nullptr;
@@ -147,6 +167,16 @@ public:
 	{
 		cout << "Height: " << height(root) << endl;
 	}
+	//find floor(key)
+	void floorT(int key)
+	{
+		cout << "Floor " <<key<<": "<<floorT(root, key) << endl;
+	}
+	//find ceil(key)
+	void ceilT(int key)
+	{
+		cout << "Ceil " << key << ": " << ceilT(root, key) << endl;
+	}
 };
 
 int main()
@@ -170,5 +200,8 @@ int main()
 	tree.hashPathSum(69);
 	tree.findNotBalance();
 	tree.height();
+	cout << endl;
+	tree.floorT(17);
+	tree.ceilT(17);
 	return 0;
 }
