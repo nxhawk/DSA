@@ -260,6 +260,21 @@ private:
 			if (t->left) s.push(t->left);
 		} 
 	}
+	bool isExist(link root, int key)
+	{
+		if (root == nullptr) return false;
+		if (root->key == key) return true;
+		if (root->key > key) return isExist(root->left, key);
+		return isExist(root->right, key);
+	}
+	//tim to tien chung gan nhat cua key a va b
+	int find_LCA(link root, int a, int b)
+	{
+		if (root == nullptr) return -1;
+		if (root->key > a && root->key > b) return find_LCA(root->left, a, b);
+		if (root->key < a && root->key < b) return find_LCA(root->right, a, b);
+		return root->key;
+	}
 public:
 	BST() {
 		root = nullptr;
@@ -349,7 +364,11 @@ public:
 		NLR_non(root);
 		cout << endl;
 	}
-
+	void find_LCA(int a, int b)
+	{
+		if (!isExist(root, a) || !isExist(root, b)) cout << "Any one of them or both doesn't exists\n";
+		else cout << find_LCA(root, a, b);
+	}
 };
 
 int main()
@@ -371,7 +390,8 @@ int main()
 	//tree.delItem(16);
 	//tree.delItem(22);
 	//{}[]
-	tree.BFS();
+	//tree.BFS();
+	tree.find_LCA(13, 15);
 	//tree.hashPathSum(69);
 	//tree.findNotBalance();
 	//tree.height();
@@ -382,9 +402,9 @@ int main()
 	//tree.maxLevel();
 	//tree.maxLevel_DFS();
 	//tree.LRN();
-	tree.LRN_non();
-	tree.LNR_non();
+	//tree.LRN_non();
+	//tree.LNR_non();
 	//tree.NLR();
-	tree.NLR_non();
+	//tree.NLR_non();
 	return 0;
 }
