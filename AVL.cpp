@@ -2,6 +2,7 @@
 
 #include<iostream>
 #include<math.h>
+#include<queue>
 #include<string>
 #include<vector>
 
@@ -156,6 +157,38 @@ private:
 		root->left = root->right;
 		root->right = temp;
 	}
+	void zigzagSearch(link root)
+	{
+		if (root == nullptr) return;
+		cout << "\nZig zag level order traversal:\n";
+		vector<vector<int>> ans;
+		queue<link> q;
+		q.push(root);
+		bool lefttoright = true;
+		while(!q.empty())
+		{
+			int size = q.size();
+			vector<int> row(size);
+			for (int i = 0; i < size; i++)
+			{
+				link node = q.front();
+				q.pop();
+
+				int index = lefttoright ? i : (size - i - 1);
+				row[index] = node->key;
+				if (node->left) q.push(node->left);
+				if (node->right) q.push(node->right);
+			}
+			lefttoright = !lefttoright;
+			ans.push_back(row);
+		}
+		for (vector<int> row : ans)
+		{
+			for (int key : row) cout << key << " ";
+			cout << endl;
+		} 
+		cout << "END\n\n";
+	}
 public:
 	AVL()
 	{
@@ -189,6 +222,10 @@ public:
 	{
 		invert_Tree(root);
 	}
+	void zigzagSearch()
+	{
+		zigzagSearch(root);
+	}
 };
 
 int main()
@@ -209,16 +246,13 @@ int main()
 	tree.addNode(99);
 	tree.addNode(97);
 
-	tree.delItem(36);
-	tree.delItem(15);
-	tree.delItem(78);
 
 	//tree.printTree();
 	tree.BFS();
-
-	cout << endl;
-	tree.invert_Tree();
-	tree.BFS();
+	tree.zigzagSearch();
+	//cout << endl;
+	//tree.invert_Tree();
+	//tree.BFS();
 	//tree.pathRTL();
 	return 0;
 }
