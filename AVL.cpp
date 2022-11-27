@@ -144,6 +144,18 @@ private:
 		pathRTL(root->left, n + 1, vt);
 		pathRTL(root->right, n + 1, vt);
 	}
+	//xoay cay 180 (lat cay)
+	void invert_Tree(link root)
+	{
+		if (root == nullptr) return;
+		invert_Tree(root->left);
+		invert_Tree(root->right);
+
+		//rotate (swap)
+		link temp = root->left;
+		root->left = root->right;
+		root->right = temp;
+	}
 public:
 	AVL()
 	{
@@ -172,32 +184,41 @@ public:
 		vector<int> vt;
 		pathRTL(root, 0, vt);
 	}
+	//xoay cay 180 do (lat cay)
+	void invert_Tree()
+	{
+		invert_Tree(root);
+	}
 };
 
 int main()
 {
 	AVL tree;
 	//{}[]
-	tree.addNode(2);
-	tree.addNode(5);
-	tree.addNode(1);
-	tree.addNode(10);
-	tree.addNode(9);
-	tree.addNode(30);
-	tree.addNode(100);
-	tree.addNode(4);
-	tree.addNode(3);
-	tree.addNode(1000);
-	tree.addNode(500);
-	tree.addNode(999);
+	tree.addNode(45);
+	tree.addNode(36);
+	tree.addNode(15);
+	tree.addNode(29);
+	tree.addNode(57);
+	tree.addNode(78);
+	tree.addNode(60);
+	tree.addNode(83);
+	tree.addNode(79);
+	tree.addNode(96);
+	tree.addNode(20);
+	tree.addNode(99);
+	tree.addNode(97);
 
-	tree.delItem(999);
-	tree.delItem(1000);
+	tree.delItem(36);
+	tree.delItem(15);
+	tree.delItem(78);
 
-	tree.printTree();
+	//tree.printTree();
 	tree.BFS();
 
 	cout << endl;
-	tree.pathRTL();
+	tree.invert_Tree();
+	tree.BFS();
+	//tree.pathRTL();
 	return 0;
 }
