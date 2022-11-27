@@ -3,6 +3,7 @@
 #include<string>
 #include<vector>
 #include<queue>
+#include<stack>
 #include<math.h>
 
 #define oo -1000000
@@ -49,6 +50,13 @@ private:
 		LRN(root->left);
 		LRN(root->right);
 		root->printNode();
+	}
+	void NLR(link root)
+	{
+		if (root == nullptr) return;
+		root->printNode();
+		NLR(root->left);
+		NLR(root->right);
 	}
 	link findMin(link r)
 	{
@@ -177,6 +185,81 @@ private:
 		maxLevel_DFS(root->left, res, resLevel, level + 1, sum);
 		maxLevel_DFS(root->right, res, resLevel, level + 1, sum);
 	}
+	void LNR_non(link root)
+	{
+		if (root == nullptr) return;
+		stack<link> s;
+		link curr = root;
+		while(curr || !s.empty())
+		{
+			while(curr)
+			{
+				s.push(curr);
+				curr = curr->left;
+			}
+
+			curr = s.top();
+			s.pop();
+
+			cout << curr->key << " ";
+
+			curr = curr->right;
+		} 
+	}
+	void LRN_non(link root)
+	{
+		if (root == nullptr) return;
+		
+		vector<int> res;
+		stack<link> s;
+		link prev = nullptr;
+		s.push(root);
+		while(!s.empty())
+		{
+			link curr = s.top();
+			if (!curr) break;
+			
+			if(prev==nullptr || prev->left == curr || prev->right == curr)
+			{
+				if (curr->left) s.push(curr->left);
+				else if (curr->right) s.push(curr->right);
+				else {
+					s.pop();
+					res.push_back(curr->key);
+				}
+			}
+			else if (curr->left == prev) {
+				if (curr->right) s.push(curr->right);
+				else {
+					s.pop();
+					res.push_back(curr->key);
+				}
+			}
+			else if(curr->right == prev)
+			{
+				s.pop();
+				res.push_back(curr->key);
+			}
+			prev = curr;
+		} 
+
+		for (int d : res) cout << d << " ";
+	}
+	void NLR_non(link root)
+	{
+		if (root == nullptr) return;
+		stack<link> s;
+		s.push(root);
+		while(!s.empty())
+		{
+			link t = s.top();
+			s.pop();
+			cout << t->key << " ";
+
+			if (t->right) s.push(t->right);
+			if (t->left) s.push(t->left);
+		} 
+	}
 public:
 	BST() {
 		root = nullptr;
@@ -187,6 +270,11 @@ public:
 	}
 	void LRN() {
 		LRN(root);
+		cout << endl;
+	}
+	void NLR()
+	{
+		NLR(root);
 		cout << endl;
 	}
 	void delItem(int t)
@@ -242,6 +330,26 @@ public:
 		maxLevel_DFS(root, res, level, 0, sum);
 		cout << "With DFS Max sum key Level is " << level << " with value: " << res << endl;
 	}
+	//LNR non recursive
+	void LNR_non()
+	{
+		cout << "LNR non recursive: ";
+		LNR_non(root);
+		cout << endl;
+	}
+	void LRN_non()
+	{
+		cout << "LRN non recursive: ";
+		LRN_non(root);
+		cout << endl;
+	}
+	void NLR_non()
+	{
+		cout << "NLR non recursive: ";
+		NLR_non(root);
+		cout << endl;
+	}
+
 };
 
 int main()
@@ -257,6 +365,9 @@ int main()
 	tree.insertItem(20);
 	tree.insertItem(21);
 	tree.insertItem(18);
+	tree.insertItem(5);
+	tree.insertItem(4);
+
 	//tree.delItem(16);
 	//tree.delItem(22);
 	//{}[]
@@ -267,8 +378,13 @@ int main()
 	//cout << endl;
 	//tree.floorT(17);
 	//tree.ceilT(17);
-	tree.maxPath();
-	tree.maxLevel();
-	tree.maxLevel_DFS();
+	//tree.maxPath();
+	//tree.maxLevel();
+	//tree.maxLevel_DFS();
+	//tree.LRN();
+	tree.LRN_non();
+	tree.LNR_non();
+	//tree.NLR();
+	tree.NLR_non();
 	return 0;
 }
