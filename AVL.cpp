@@ -189,6 +189,17 @@ private:
 		} 
 		cout << "END\n\n";
 	}
+	int Diameter(link root, int &diameter)
+	{
+		if (root == nullptr) return 0;
+
+		int left_height = Diameter(root->left, diameter);
+		int right_height = Diameter(root->right, diameter);
+
+		diameter = max(diameter, left_height + right_height + 1);
+
+		return max(left_height, right_height) + 1;
+	}
 public:
 	AVL()
 	{
@@ -226,6 +237,13 @@ public:
 	{
 		zigzagSearch(root);
 	}
+	//tinh duong kinh cua cay (duong kinh la so node nhieu nhat tren duong di tu la nay den la khac) 
+	void Diameter()
+	{
+		int diameter = 0;
+		Diameter(root, diameter);
+		cout << "Diameter: " << diameter << endl;
+	}
 };
 
 int main()
@@ -245,11 +263,13 @@ int main()
 	tree.addNode(20);
 	tree.addNode(99);
 	tree.addNode(97);
+	tree.addNode(31);
 
 
 	//tree.printTree();
 	tree.BFS();
 	tree.zigzagSearch();
+	tree.Diameter();
 	//cout << endl;
 	//tree.invert_Tree();
 	//tree.BFS();
