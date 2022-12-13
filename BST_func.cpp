@@ -147,6 +147,16 @@ private:
 		if (root == nullptr) return sum;
 		return max(maxPath(root->left, sum + root->key), maxPath(root->right, sum + root->key));
 	}
+	//find max sum path from leaf to leaf
+	int maxPath2(link root, int &sum)
+	{
+		if (root == nullptr) return 0;
+		int left_sum = maxPath2(root->left, sum);
+		int right_sum = maxPath2(root->right, sum);
+
+		sum = max(sum, left_sum + right_sum + root->key);
+		return max(left_sum, right_sum) + root->key;
+	}
 	//find max sum key of level
 	void maxLevel(link root, int& level, int &sum)
 	{
@@ -328,7 +338,16 @@ public:
 	//find max weight path from root to leaf
 	void maxPath()
 	{
-		cout << "Max Path From Root to Leaf: "<<maxPath(root, 0) << endl;
+		cout << "Max path from root to leaf: " << maxPath(root, 0) << endl;
+		//sum weight path leaf-left -> root ->leaf-right
+		cout << "Max path from leaf-left->root->leadf-right: " << maxPath(root->left, 0) + root->key + maxPath(root->right, 0) << endl;
+	}
+	//find max weight path from leaf to leaf
+	void maxPath2()
+	{
+		int sum = 0;
+		maxPath2(root, sum);
+		cout << "Max path from leaf to other leaf: " <<sum << endl;
 	}
 	//find max wieght level of tree
 	void maxLevel()
