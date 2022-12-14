@@ -1,5 +1,4 @@
 //{}[]
-
 #include<iostream>
 #include<math.h>
 #include<queue>
@@ -200,15 +199,35 @@ private:
 
 		return max(left_height, right_height) + 1;
 	}
+	//left view traveral
+	void leftView(link root, vector<int>& ans, int level) {
+		if (root == nullptr) return;
+		
+		//we entered into a new level    
+		if (level == ans.size())
+			ans.push_back(root->key);
+
+		leftView(root->left, ans, level + 1);//chang index two line => right view
+		leftView(root->right, ans, level + 1);
+	}
+	//max sum of long root to leaf path
+	void maxSumOfLongRootToLeafPath(link root, int sum, int len, int &maxSum, int &maxLen)
+	{
+		if (root == nullptr) {
+			if (len > maxLen) {
+				maxLen = len;
+				maxSum = sum;
+			}
+			else if (len == maxLen) maxSum = max(maxSum, sum);
+			return;
+		}
+		sum += root->key, len += 1;
+		maxSumOfLongRootToLeafPath(root->left, sum, len, maxSum, maxLen);
+		maxSumOfLongRootToLeafPath(root->right, sum, len, maxSum, maxLen);
+	}
 public:
-	AVL()
-	{
-		root = nullptr;
-	}
-	void addNode(int key)
-	{
-		root = addNode(root, key);
-	}
+	AVL(){ root = nullptr; }
+	void addNode(int key){ root = addNode(root, key); }
 	void printTree()
 	{
 		printTree(root);
@@ -219,24 +238,15 @@ public:
 		BFS(root);
 		cout << endl;
 	}
-	void delItem(int key)
-	{
-		root = delItem(root, key);
-	}
+	void delItem(int key){ root = delItem(root, key); }
 	void pathRTL()
 	{
 		vector<int> vt;
 		pathRTL(root, 0, vt);
 	}
 	//xoay cay 180 do (lat cay)
-	void invert_Tree()
-	{
-		invert_Tree(root);
-	}
-	void zigzagSearch()
-	{
-		zigzagSearch(root);
-	}
+	void invert_Tree(){ invert_Tree(root); }
+	void zigzagSearch(){ zigzagSearch(root); }
 	//tinh duong kinh cua cay (duong kinh la so node nhieu nhat tren duong di tu la nay den la khac) 
 	void Diameter()
 	{
@@ -244,12 +254,26 @@ public:
 		Diameter(root, diameter);
 		cout << "Diameter: " << diameter << endl;
 	}
+	//Left View
+	void leftView() {
+		vector<int> ans;
+		leftView(root, ans, 0);
+		cout << "LEFT VIEW: ";
+		for (auto x : ans) cout << x << " ";
+		cout << endl;
+	}
+	//max sum of long root to leaf path
+	void maxSumOfLongRootToLeafPath()
+	{
+		int len = 0, sum = 0;
+		maxSumOfLongRootToLeafPath(root, 0, 0, sum, len);
+		cout << "Max Sum of long Root to Leaf Path: " << sum << " With length = " << len << endl;
+	}
 };
 
 int main()
 {
 	AVL tree;
-	//{}[]
 	tree.addNode(45);
 	tree.addNode(36);
 	tree.addNode(15);
@@ -264,8 +288,6 @@ int main()
 	tree.addNode(99);
 	tree.addNode(97);
 	tree.addNode(31);
-
-
 	//tree.printTree();
 	tree.BFS();
 	tree.zigzagSearch();
@@ -274,5 +296,7 @@ int main()
 	//tree.invert_Tree();
 	//tree.BFS();
 	//tree.pathRTL();
+	tree.leftView();
+	tree.maxSumOfLongRootToLeafPath();
 	return 0;
 }
