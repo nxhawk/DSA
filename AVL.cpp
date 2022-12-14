@@ -225,6 +225,57 @@ private:
 		maxSumOfLongRootToLeafPath(root->left, sum, len, maxSum, maxLen);
 		maxSumOfLongRootToLeafPath(root->right, sum, len, maxSum, maxLen);
 	}
+	// find kth Ancestor of node has value (val)
+	link solve(link root, int& k, int val) {
+		if (root == nullptr) return root;
+		if (root->key == val) return root;
+		
+		link leftAns = solve(root->left, k, val);
+		link rightAns = solve(root->right, k, val);
+		
+		//wapas
+		if (leftAns != nullptr && rightAns == nullptr){
+			k--;
+			if (k <= 0) {
+				//answer lock
+				k = INT_MAX;
+				return root;
+			}
+			return leftAns;
+		}
+
+		if (leftAns == nullptr && rightAns != nullptr) {
+			k--;
+			if (k <= 0) {
+				//answer lock
+				k = INT_MAX;
+				return root;
+			}
+			return rightAns;
+		}
+		return nullptr;
+	}
+	//kth ancestor
+	int kthAncestor(link root, int k, int val)
+	{
+		link ans = solve(root, k, val);
+		if (!ans || ans->key == val || k == 0) return -1;
+		return ans->key;
+	}
+	//Function to return the maximum sum of non-adjacent nodes
+	pair<int,int> maxSumNonAdj(link root)
+	{
+		if (root == nullptr) return make_pair(0, 0);
+
+		pair<int, int> left = maxSumNonAdj(root->left);
+		pair<int, int> right = maxSumNonAdj(root->right);
+		pair<int, int> res;
+		
+		res.first = root->key + left.second + right.second;
+		res.second = max(left.first, left.second) + max(right.first, right.second);
+
+		return res;
+	}
 public:
 	AVL(){ root = nullptr; }
 	void addNode(int key){ root = addNode(root, key); }
@@ -269,6 +320,20 @@ public:
 		maxSumOfLongRootToLeafPath(root, 0, 0, sum, len);
 		cout << "Max Sum of long Root to Leaf Path: " << sum << " With length = " << len << endl;
 	}
+	//find kth Ancestor of node has value = val
+	void kthAncestor(int k, int val)
+	{
+		int res = kthAncestor(root, k, val);
+		if (res == -1) cout << "Error!\n";
+		else cout << "Ancestor index " << k << " of node has key="<<val<<" is " << res << endl;
+	}
+	//void print the maximum sum of non-adjacent nodes
+	void maxSumNonAdj() 
+	{
+		pair<int, int> ans = maxSumNonAdj(root);
+		int res = max(ans.first, ans.second);
+		cout << "Max sum of non-adjacent nodes: " << res << endl;
+	}
 };
 
 int main()
@@ -298,5 +363,7 @@ int main()
 	//tree.pathRTL();
 	tree.leftView();
 	tree.maxSumOfLongRootToLeafPath();
+	tree.kthAncestor(2, 98);
+	tree.maxSumNonAdj();
 	return 0;
 }
