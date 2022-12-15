@@ -276,6 +276,41 @@ private:
 
 		return res;
 	}
+	//find min depth
+	int minDepth(link root)
+	{
+		if (root == nullptr) return 0;
+		int l = minDepth(root->left);
+		int r = minDepth(root->right);
+
+		if (!l || !r) return l + r + 1;
+		return min(l, r) + 1;
+	}
+	//sum of leaf (leaf right or leaf left)
+	int sumOfLeaf(link root, int flag)//flag 0 => no plus, flag 1 => plus
+	{
+		if (root == nullptr) return 0;
+		if (!root->left && !root->right && flag) return root->key;
+		
+		//change 0->1, 1->0 to find sum of right leaf
+		return sumOfLeaf(root->left, 1) + sumOfLeaf(root->right, 0);
+	}
+	//find LCA
+	link find_LCA(link root, int a, int b)
+	{
+		if (root == nullptr) return nullptr;
+		if (root->key > a && root->key > b) return find_LCA(root->left, a, b);
+		if (root->key < a && root->key < b) return find_LCA(root->right, a, b);
+		return root;
+	}
+	//find DIST tow node
+	int findDist(link root, int key)
+	{
+		if (root == nullptr) return -1;
+		if (root->key == key) return 0;
+		if (root->key > key) return findDist(root->left, key) + 1;
+		return findDist(root->right, key) + 1;
+	}
 public:
 	AVL(){ root = nullptr; }
 	void addNode(int key){ root = addNode(root, key); }
@@ -334,6 +369,17 @@ public:
 		int res = max(ans.first, ans.second);
 		cout << "Max sum of non-adjacent nodes: " << res << endl;
 	}
+	//find min depth
+	void minDepth(){ cout << "Min Depth: " << minDepth(root) << endl; }
+	//sum of leaf
+	void sumOfLeaf() { cout << "Sum of left leaf: " << sumOfLeaf(root, 0) << endl; }
+	///find distwo node
+	void DistTwoNode(int a, int b)
+	{
+		link lca = find_LCA(root, a, b);
+		if (!lca) cout << "None LCA\n";
+		else cout << "Dist Two node has value "<< a<<" and "<<b<<": "<<findDist(lca, a) + findDist(lca, b);
+	}
 };
 
 int main()
@@ -365,5 +411,9 @@ int main()
 	tree.maxSumOfLongRootToLeafPath();
 	tree.kthAncestor(2, 98);
 	tree.maxSumNonAdj();
+	
+	tree.minDepth();
+	tree.sumOfLeaf();
+	tree.DistTwoNode(31, 45);
 	return 0;
 }
