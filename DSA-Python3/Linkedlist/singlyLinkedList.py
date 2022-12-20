@@ -68,6 +68,40 @@ class LinkedList:
             prev = curr
             curr = curr.next
 
+    # count node
+    def countNode(self):
+        count = 0
+        curr = self.head
+
+        while curr:
+            count += 1
+            curr = curr.next
+
+        return count
+
+    # count node recursive
+    def countNodeRec(self, node):
+        if node is None:
+            return 0
+        return 1 + self.countNodeRec(node.next)
+
+    def countNodeRec1(self):
+        return self.countNodeRec(self.head)
+
+    # bubble sort linked list
+
+    def bubbleSort(self):
+        p = self.head
+        while p:
+            curr = p.next
+            if curr is None:
+                break
+            while curr:
+                if p.key > curr.key:
+                    p.key, curr.key = curr.key, p.key
+                curr = curr.next
+            p = p.next
+
 
 if __name__ == '__main__':
     llist = LinkedList()
@@ -79,6 +113,7 @@ if __name__ == '__main__':
     llist.append(123)
     llist.insertAfter(4, 5)
     llist.insertAfter(2, 123)
-    llist.printList()
     llist.deleteNode(123)
     llist.printList()
+    # llist.bubbleSort()
+    print("Node:", llist.countNodeRec1())
