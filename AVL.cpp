@@ -1,5 +1,4 @@
 //{}[]
-
 #include<iostream>
 #include<math.h>
 #include<queue>
@@ -200,15 +199,121 @@ private:
 
 		return max(left_height, right_height) + 1;
 	}
+	//left view traveral
+	void leftView(link root, vector<int>& ans, int level) {
+		if (root == nullptr) return;
+		
+		//we entered into a new level    
+		if (level == ans.size())
+			ans.push_back(root->key);
+
+		leftView(root->left, ans, level + 1);//chang index two line => right view
+		leftView(root->right, ans, level + 1);
+	}
+	//max sum of long root to leaf path
+	void maxSumOfLongRootToLeafPath(link root, int sum, int len, int &maxSum, int &maxLen)
+	{
+		if (root == nullptr) {
+			if (len > maxLen) {
+				maxLen = len;
+				maxSum = sum;
+			}
+			else if (len == maxLen) maxSum = max(maxSum, sum);
+			return;
+		}
+		sum += root->key, len += 1;
+		maxSumOfLongRootToLeafPath(root->left, sum, len, maxSum, maxLen);
+		maxSumOfLongRootToLeafPath(root->right, sum, len, maxSum, maxLen);
+	}
+	// find kth Ancestor of node has value (val)
+	link solve(link root, int& k, int val) {
+		if (root == nullptr) return root;
+		if (root->key == val) return root;
+		
+		link leftAns = solve(root->left, k, val);
+		link rightAns = solve(root->right, k, val);
+		
+		//wapas
+		if (leftAns != nullptr && rightAns == nullptr){
+			k--;
+			if (k <= 0) {
+				//answer lock
+				k = INT_MAX;
+				return root;
+			}
+			return leftAns;
+		}
+
+		if (leftAns == nullptr && rightAns != nullptr) {
+			k--;
+			if (k <= 0) {
+				//answer lock
+				k = INT_MAX;
+				return root;
+			}
+			return rightAns;
+		}
+		return nullptr;
+	}
+	//kth ancestor
+	int kthAncestor(link root, int k, int val)
+	{
+		link ans = solve(root, k, val);
+		if (!ans || ans->key == val || k == 0) return -1;
+		return ans->key;
+	}
+	//Function to return the maximum sum of non-adjacent nodes
+	pair<int,int> maxSumNonAdj(link root)
+	{
+		if (root == nullptr) return make_pair(0, 0);
+
+		pair<int, int> left = maxSumNonAdj(root->left);
+		pair<int, int> right = maxSumNonAdj(root->right);
+		pair<int, int> res;
+		
+		res.first = root->key + left.second + right.second;
+		res.second = max(left.first, left.second) + max(right.first, right.second);
+
+		return res;
+	}
+	//find min depth
+	int minDepth(link root)
+	{
+		if (root == nullptr) return 0;
+		int l = minDepth(root->left);
+		int r = minDepth(root->right);
+
+		if (!l || !r) return l + r + 1;
+		return min(l, r) + 1;
+	}
+	//sum of leaf (leaf right or leaf left)
+	int sumOfLeaf(link root, int flag)//flag 0 => no plus, flag 1 => plus
+	{
+		if (root == nullptr) return 0;
+		if (!root->left && !root->right && flag) return root->key;
+		
+		//change 0->1, 1->0 to find sum of right leaf
+		return sumOfLeaf(root->left, 1) + sumOfLeaf(root->right, 0);
+	}
+	//find LCA
+	link find_LCA(link root, int a, int b)
+	{
+		if (root == nullptr) return nullptr;
+		if (root->key > a && root->key > b) return find_LCA(root->left, a, b);
+		if (root->key < a && root->key < b) return find_LCA(root->right, a, b);
+		return root;
+	}
+	//find DIST tow node
+	int findDist(link root, int key)
+	{
+		if (root == nullptr) return -1;
+		if (root->key == key) return 0;
+		if (root->key > key) return findDist(root->left, key) + 1;
+		return findDist(root->right, key) + 1;
+	}
 public:
-	AVL()
-	{
-		root = nullptr;
-	}
-	void addNode(int key)
-	{
-		root = addNode(root, key);
-	}
+	AVL(){ root = nullptr; }
+	void addNode(int key){ root = addNode(root, key); }
 	void printTree()
 	{
 		printTree(root);
@@ -219,24 +324,15 @@ public:
 		BFS(root);
 		cout << endl;
 	}
-	void delItem(int key)
-	{
-		root = delItem(root, key);
-	}
+	void delItem(int key){ root = delItem(root, key); }
 	void pathRTL()
 	{
 		vector<int> vt;
 		pathRTL(root, 0, vt);
 	}
 	//xoay cay 180 do (lat cay)
-	void invert_Tree()
-	{
-		invert_Tree(root);
-	}
-	void zigzagSearch()
-	{
-		zigzagSearch(root);
-	}
+	void invert_Tree(){ invert_Tree(root); }
+	void zigzagSearch(){ zigzagSearch(root); }
 	//tinh duong kinh cua cay (duong kinh la so node nhieu nhat tren duong di tu la nay den la khac) 
 	void Diameter()
 	{
@@ -244,12 +340,51 @@ public:
 		Diameter(root, diameter);
 		cout << "Diameter: " << diameter << endl;
 	}
+	//Left View
+	void leftView() {
+		vector<int> ans;
+		leftView(root, ans, 0);
+		cout << "LEFT VIEW: ";
+		for (auto x : ans) cout << x << " ";
+		cout << endl;
+	}
+	//max sum of long root to leaf path
+	void maxSumOfLongRootToLeafPath()
+	{
+		int len = 0, sum = 0;
+		maxSumOfLongRootToLeafPath(root, 0, 0, sum, len);
+		cout << "Max Sum of long Root to Leaf Path: " << sum << " With length = " << len << endl;
+	}
+	//find kth Ancestor of node has value = val
+	void kthAncestor(int k, int val)
+	{
+		int res = kthAncestor(root, k, val);
+		if (res == -1) cout << "Error!\n";
+		else cout << "Ancestor index " << k << " of node has key="<<val<<" is " << res << endl;
+	}
+	//void print the maximum sum of non-adjacent nodes
+	void maxSumNonAdj() 
+	{
+		pair<int, int> ans = maxSumNonAdj(root);
+		int res = max(ans.first, ans.second);
+		cout << "Max sum of non-adjacent nodes: " << res << endl;
+	}
+	//find min depth
+	void minDepth(){ cout << "Min Depth: " << minDepth(root) << endl; }
+	//sum of leaf
+	void sumOfLeaf() { cout << "Sum of left leaf: " << sumOfLeaf(root, 0) << endl; }
+	///find distwo node
+	void DistTwoNode(int a, int b)
+	{
+		link lca = find_LCA(root, a, b);
+		if (!lca) cout << "None LCA\n";
+		else cout << "Dist Two node has value "<< a<<" and "<<b<<": "<<findDist(lca, a) + findDist(lca, b);
+	}
 };
 
 int main()
 {
 	AVL tree;
-	//{}[]
 	tree.addNode(45);
 	tree.addNode(36);
 	tree.addNode(15);
@@ -264,8 +399,6 @@ int main()
 	tree.addNode(99);
 	tree.addNode(97);
 	tree.addNode(31);
-
-
 	//tree.printTree();
 	tree.BFS();
 	tree.zigzagSearch();
@@ -274,5 +407,13 @@ int main()
 	//tree.invert_Tree();
 	//tree.BFS();
 	//tree.pathRTL();
+	tree.leftView();
+	tree.maxSumOfLongRootToLeafPath();
+	tree.kthAncestor(2, 98);
+	tree.maxSumNonAdj();
+	
+	tree.minDepth();
+	tree.sumOfLeaf();
+	tree.DistTwoNode(31, 45);
 	return 0;
 }
