@@ -1,4 +1,3 @@
-//{}[]
 #include<iostream>
 #include<math.h>
 #include<vector>
@@ -6,7 +5,7 @@
 
 using namespace std;
 
-enum Color {RED, BLACK};
+enum Color {RED, BLACK, DOUBLE_BLACK};
 
 struct Node
 {
@@ -33,10 +32,13 @@ protected:
 	void rotateLeft(link);
 	void rotateRight(link);
 	void fixInsertRBTree(link);
+	void fixDeleteRBTree(link);
 	link insertBST(link, link);
+	link deleteBST(link, int);
 public:
 	RBTree();
 	void insertValue(int);
+	void deleteValue(int);
 	void printTree();
 };
 
@@ -150,8 +152,7 @@ void RBTree::fixInsertRBTree(link ptr)
 				if (ptr == parent->left) {
 					rotateRight(parent);
 					ptr = parent;
-					parent = ptr->parent;
-					
+					parent = ptr->parent;					
 				}
 				rotateLeft(grandparent);
 				swap(parent->color, grandparent->color);
@@ -187,7 +188,119 @@ void RBTree::printTree()
 	}
 }
 
+//find node need delete 
+link RBTree::deleteBST(link root, int data)
+{
+	if (root == nullptr) return root;
+	if (data < root->data) return deleteBST(root->left, data);
+	if (data > root->data) return deleteBST(root->right, data);
+	
+	if (root->left == nullptr && root->right == nullptr) return root;
 
+	link temp = root->right;
+	while (temp->left) temp = temp->left;
+	root->data = temp->data;
+	return deleteBST(root->right, temp->data);
+}
+
+void RBTree::deleteValue(int data)
+{
+	link node = deleteBST(root, data);
+	fixDeleteRBTree(node);
+}
+
+
+//Damn!!! What is it
+void RBTree::fixDeleteRBTree(link node) {
+	if (node == nullptr) return;
+
+	if (node == root) {
+		root = nullptr;
+		return;
+	}
+
+	if (getColor(node) == RED || getColor(node->left) == RED || getColor(node->right) == RED) {
+		link child = node->left != nullptr ? node->left : node->right;
+
+		if (node == node->parent->left) node->parent->left = child;
+		else node->parent->right = child;
+		
+		if (child != nullptr) child->parent = node->parent;
+		setColor(child, BLACK);
+		delete (node);		
+	}
+	else {
+		link sibling = nullptr;
+		link parent = nullptr;
+		link ptr = node;
+		setColor(ptr, DOUBLE_BLACK);
+		while (ptr != root && getColor(ptr) == DOUBLE_BLACK) {
+			parent = ptr->parent;
+			if (ptr == parent->left) {
+				sibling = parent->right;
+				if (getColor(sibling) == RED) {
+					setColor(sibling, BLACK);
+					setColor(parent, RED);
+					rotateLeft(parent);
+				}
+				else {
+					if (getColor(sibling->left) == BLACK && getColor(sibling->right) == BLACK) {
+						setColor(sibling, RED);
+						if (getColor(parent) == RED) setColor(parent, BLACK);
+						else setColor(parent, DOUBLE_BLACK);
+						ptr = parent;
+					}
+					else {
+						if (getColor(sibling->right) == BLACK) {
+							setColor(sibling->left, BLACK);
+							setColor(sibling, RED);
+							rotateRight(sibling);
+							sibling = parent->right;
+						}
+						setColor(sibling, parent->color);
+						setColor(parent, BLACK);
+						setColor(sibling->right, BLACK);
+						rotateLeft(parent);
+						break;
+					}
+				}
+			}
+			else {
+				sibling = parent->left;
+				if (getColor(sibling) == RED) {
+					setColor(sibling, BLACK);
+					setColor(parent, RED);
+					rotateRight(parent);
+				}
+				else {
+					if (getColor(sibling->left) == BLACK && getColor(sibling->right) == BLACK) {
+						setColor(sibling, RED);
+						if (getColor(parent) == RED) setColor(parent, BLACK);
+						else setColor(parent, DOUBLE_BLACK);
+						ptr = parent;
+					}
+					else {
+						if (getColor(sibling->left) == BLACK) {
+							setColor(sibling->right, BLACK);
+							setColor(sibling, RED);
+							rotateLeft(sibling);
+							sibling = parent->left;
+						}
+						setColor(sibling, parent->color);
+						setColor(parent, BLACK);
+						setColor(sibling->left, BLACK);
+						rotateRight(parent);
+						break;
+					}
+				}
+			}
+		}
+		if (node == node->parent->left) node->parent->left = nullptr;
+		else node->parent->right = nullptr;
+		delete(node);
+		setColor(root, BLACK);
+	}
+}
 
 int main()
 {	
@@ -204,6 +317,7 @@ int main()
 	tree.insertValue(11);
 	tree.insertValue(12);
 	tree.insertValue(15);
+	tree.deleteValue(8);
 	tree.printTree();
 	return 0;
 }
