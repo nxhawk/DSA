@@ -74,6 +74,25 @@ class BST:
                     queue.append(curr.right)
             print()
 
+    def height(self):
+        def heightT(root):
+            if root is None:
+                return 0
+            return max(heightT(root.left), heightT(root.right)) + 1
+        return heightT(self.root)
+
+    def countNode(self):
+        def countNodeT(root):
+            if root is None:
+                return 0
+            return countNodeT(root.left) + countNodeT(root.right) + 1
+        return countNodeT(self.root)
+
+    def heightAt(self, root):
+        if root is None:
+            return 0
+        return max(self.heightAt(root.left), self.heightAt(root.right)) + 1
+
 
 if __name__ == '__main__':
     tree = BST()
@@ -84,6 +103,7 @@ if __name__ == '__main__':
     tree.insert(15)
     tree.insert(12)
     tree.insert(4)
-    tree.deleteNode(5)
-    tree.deleteNode(47)
     tree.BFS()
+    #print("Height: %d" % tree.height())
+    #print("Node: %d" % tree.countNode())
+    print(tree.heightAt(tree.root.right))
