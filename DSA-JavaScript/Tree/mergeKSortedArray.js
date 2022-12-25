@@ -80,14 +80,13 @@ class MinHeap {
 
 /**
  *
- * @param {Array} grid
- * @returns {Array}
+ * @param {number[]} grid
+ * @returns {number[]}
  */
 function mergeKSortedArray(grid) {
   let k = grid.length;
   let heap = new MinHeap(cmp, grid);
   for (let i = 0; i < k; i++) heap.insert([i, 0]);
-
   let res = [];
   while (!heap.isEmpty()) {
     let root = heap.getRoot();
